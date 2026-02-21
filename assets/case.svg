@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Outer Case Body -->
+  <path d="M 20 25 
+           L 80 25 
+           C 88 25, 95 32, 95 40 
+           L 95 65 
+           C 95 80, 85 85, 75 85 
+           L 25 85 
+           C 15 85, 5 80, 5 65 
+           L 5 40 
+           C 5 32, 12 25, 20 25 Z" 
+        fill="#FFFFFF" />
+  
+  <!-- Lid Cut line -->
+  <path d="M 5 45 L 95 45" stroke="#202020" stroke-width="2.5" />
+  
+  <!-- LED Indicator or finger groove -->
+  <circle cx="50" cy="55" r="1.5" fill="#202020" />
+</svg>

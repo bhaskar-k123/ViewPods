@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g transform="translate(-10, -5)"> <!-- Shift whole bud slightly to center -->
+      <!-- Stem -->
+      <path d="M 45 40 L 45 80 C 45 85, 55 85, 55 80 L 55 40 Z" fill="#FFFFFF" />
+      
+      <!-- Main Body Bulb -->
+      <ellipse cx="50" cy="35" rx="16" ry="18" fill="#FFFFFF" transform="rotate(15 50 35)" />
+      
+      <!-- In-Ear Tip (Right pointing) -->
+      <path d="M 63 28 C 75 25, 85 30, 85 38 C 85 45, 75 48, 62 43 Z" fill="#FFFFFF" />
+      
+      <!-- Inner vent shadow -->
+      <ellipse cx="52" cy="30" rx="4" ry="6" fill="#202020" transform="rotate(-30 52 30)" />
+      
+      <!-- R Label on stem -->
+      <text x="46" y="70" font-family="sans-serif" font-weight="bold" font-size="10" fill="#202020">R</text>
+  </g>
+</svg>
