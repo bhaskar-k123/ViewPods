@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+venv/
+ENV/
+
+# pytest
+.pytest_cache/
+
+# User exclusions
+~/.gemini/antigravity/skills/
