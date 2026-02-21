@@ -74,11 +74,11 @@ def load_and_crop_asset(filename: str, asset_type: str, target_size: int, crop_r
             # Load raw bytes into PIL
             raw_img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGBA")
             
-            # Force the SVG pixels to be white AND boost the alpha so the extremely thin paths become thicker/bolder.
+            # Force the SVG pixels to be black to contrast with the new light background
             r, g, b, a = raw_img.split()
-            r = r.point(lambda _: 255)
-            g = g.point(lambda _: 255)
-            b = b.point(lambda _: 255)
+            r = r.point(lambda _: 0)
+            g = g.point(lambda _: 0)
+            b = b.point(lambda _: 0)
             # Any anti-aliased edge pixel is amplified to increase stroke weight against the dark background
             a = a.point(lambda p: min(255, int(p * 2.5)))
             raw_img = Image.merge("RGBA", (r, g, b, a))
@@ -139,6 +139,10 @@ class AntiAliasedBatteryRing(ctk.CTkLabel):
         padding = 10 * scale
         
         bbox = [padding, padding, s_size - padding, s_size - padding]
+        
+        # User requested: background within the rings should be lighter, like white
+        draw.ellipse(bbox, fill="#FFFFFF")
+        
         draw.arc(bbox, 0, 360, fill=TRACK_BG, width=stroke_w)
         
         if value is not None:
