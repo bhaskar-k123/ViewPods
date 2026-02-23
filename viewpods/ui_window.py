@@ -74,11 +74,11 @@ def load_and_crop_asset(filename: str, asset_type: str, target_size: int, crop_r
             # Load raw bytes into PIL
             raw_img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGBA")
             
-            # Force the SVG pixels to be black to contrast with the new light background
+            # Make the SVG pixels white instead of black to match iOS dark mode icons
             r, g, b, a = raw_img.split()
-            r = r.point(lambda _: 0)
-            g = g.point(lambda _: 0)
-            b = b.point(lambda _: 0)
+            r = r.point(lambda _: 255)
+            g = g.point(lambda _: 255)
+            b = b.point(lambda _: 255)
             # Any anti-aliased edge pixel is amplified to increase stroke weight against the dark background
             a = a.point(lambda p: min(255, int(p * 2.5)))
             raw_img = Image.merge("RGBA", (r, g, b, a))
@@ -140,9 +140,7 @@ class AntiAliasedBatteryRing(ctk.CTkLabel):
         
         bbox = [padding, padding, s_size - padding, s_size - padding]
         
-        # User requested: background within the rings should be lighter, like white
-        draw.ellipse(bbox, fill="#FFFFFF")
-        
+        # Draw the empty track
         draw.arc(bbox, 0, 360, fill=TRACK_BG, width=stroke_w)
         
         if value is not None:
@@ -161,6 +159,32 @@ class AntiAliasedBatteryRing(ctk.CTkLabel):
                 
             if extent > 0:
                 draw.arc(bbox, start_angle, end_angle, fill=color, width=stroke_w)
+                
+                # Apple UI Kit uses rounded caps for the progress ring!
+                # We calculate the Cartesian coordinates for the start/end angles to draw circular caps.
+                import math
+                radius = (s_size - 2 * padding) / 2
+                center_x = s_size / 2
+                center_y = s_size / 2
+                
+                def get_point(angle_deg):
+                    # convert to radians
+                    rad = math.radians(angle_deg)
+                    # For PIL arcs, 0 is at 3 o'clock, 90 is at 6 o'clock (y-axis goes down)
+                    x = center_x + radius * math.cos(rad)
+                    y = center_y + radius * math.sin(rad)
+                    return (x, y)
+                
+                # Cap diameter matches stroke width closely
+                cap_r = stroke_w / 2
+                
+                # Start cap
+                sx, sy = get_point(start_angle)
+                draw.ellipse([sx - cap_r, sy - cap_r, sx + cap_r, sy + cap_r], fill=color)
+                
+                # End cap
+                ex, ey = get_point(end_angle)
+                draw.ellipse([ex - cap_r, ey - cap_r, ex + cap_r, ey + cap_r], fill=color)
                 
             if charging:
                 bolt_x = s_size // 2
@@ -269,7 +293,8 @@ class StatusWindow:
             col = ctk.CTkFrame(parent, fg_color="transparent")
             ring = AntiAliasedBatteryRing(col, device_type, filename, asset_type, crop_rule)
             ring.pack()
-            pct = ctk.CTkLabel(col, text="--%", font=(FONT_FAMILY, 28), text_color=TEXT_COLOR_PRIMARY)
+            # Bolder UI font to match Apple UI Toolkit
+            pct = ctk.CTkLabel(col, text="--%", font=(FONT_FAMILY, 28, "bold"), text_color=TEXT_COLOR_PRIMARY)
             pct.pack(pady=(10, 0))
             return col, ring, pct
             
