@@ -22,16 +22,17 @@ from viewpods.state_manager import ConnectionState, DeviceState
 logger = logging.getLogger(__name__)
 
 # ── Exact iOS Widget Tokens ──────────────────────────────────────────────
-BG_PRIMARY = "#1C1C1E"       # Widget Dark Background
-TRACK_BG = "#303030"         # The empty ring background
+BG_PRIMARY = "#F5F5F7"       # Widget Light Background
+TRACK_BG = "#E5E5EA"         # The empty ring background
 BAR_GREEN = "#32D74B"        # bright green
 BAR_YELLOW = "#FFD60A"       # warning yellow
 BAR_RED = "#FF453A"          # critical red
 
-TEXT_COLOR_PRIMARY = "#FFFFFF"
+TEXT_COLOR_PRIMARY = "#000000"
 TEXT_COLOR_SECONDARY = "#8E8E93"
 
-FONT_FAMILY = "Segoe UI Variable Display"  
+# Apple System Fonts (with fallbacks)
+FONT_FAMILY = "SF Pro Display"  
 
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 220
@@ -43,7 +44,8 @@ def apply_windows_11_mica(hwnd: int) -> None:
         DWMWA_USE_IMMERSIVE_DARK_MODE = 20
         DWMWA_SYSTEMBACKDROP_TYPE = 38
         
-        val = ctypes.c_int(1)
+        # 0 sets MICA to Light Mode background
+        val = ctypes.c_int(0)
         ctypes.windll.dwmapi.DwmSetWindowAttribute(
             hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(val), ctypes.sizeof(val)
         )
@@ -76,9 +78,9 @@ def load_and_crop_asset(filename: str, asset_type: str, target_size: int, crop_r
             
             # Make the SVG pixels white instead of black to match iOS dark mode icons
             r, g, b, a = raw_img.split()
-            r = r.point(lambda _: 255)
-            g = g.point(lambda _: 255)
-            b = b.point(lambda _: 255)
+            r = r.point(lambda _: 0)
+            g = g.point(lambda _: 0)
+            b = b.point(lambda _: 0)
             # Any anti-aliased edge pixel is amplified to increase stroke weight against the dark background
             a = a.point(lambda p: min(255, int(p * 2.5)))
             raw_img = Image.merge("RGBA", (r, g, b, a))
@@ -163,7 +165,8 @@ class AntiAliasedBatteryRing(ctk.CTkLabel):
                 # Apple UI Kit uses rounded caps for the progress ring!
                 # We calculate the Cartesian coordinates for the start/end angles to draw circular caps.
                 import math
-                radius = (s_size - 2 * padding) / 2
+                # The radius of the centerline of the PIL arc stroke is outer_bbox_radius - stroke/2
+                radius = (s_size - 2 * padding - stroke_w) / 2
                 center_x = s_size / 2
                 center_y = s_size / 2
                 
@@ -241,7 +244,7 @@ class StatusWindow:
 
     def initialize(self) -> None:
         if self._initialized: return
-        ctk.set_appearance_mode("dark")
+        ctk.set_appearance_mode("light")
         self._root = ctk.CTk()
         self._root.title("ViewPods")
         self._root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
