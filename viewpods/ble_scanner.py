@@ -57,8 +57,6 @@ class BLEScanner:
         """Signal the scanner to stop and wait for the thread to exit."""
         self._running = False
         self._stop_event.set()
-        if self._loop and self._loop.is_running():
-            self._loop.call_soon_threadsafe(self._loop.stop)
         if self._thread and self._thread.is_alive():
             self._thread.join(timeout=5.0)
         logger.info("BLE scanner thread stopped")
