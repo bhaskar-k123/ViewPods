@@ -17,11 +17,11 @@ from PySide6.QtCore import (
 )
 from PySide6.QtGui import (
     QColor, QPainter, QPainterPath, QPen, QBrush,
-    QPixmap, QImage, QFontDatabase, QFont, QLinearGradient
+    QPixmap, QImage, QLinearGradient
 )
 from PySide6.QtWidgets import (
     QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout,
-    QGraphicsDropShadowEffect, QStackedLayout, QGraphicsOpacityEffect
+    QGraphicsDropShadowEffect, QPushButton
 )
 from PySide6.QtSvg import QSvgRenderer
 
@@ -485,7 +485,6 @@ class StatusWindow(QWidget):
         main_layout.addWidget(bg_widget)
         
         # Top bar for Toggle Button
-        from PySide6.QtWidgets import QPushButton
         top_bar = QHBoxLayout()
         top_bar.setContentsMargins(0, 0, 0, 0)
         self.toggle_btn = QPushButton("Collapse")
